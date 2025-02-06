@@ -7,6 +7,8 @@ void setup() {
   Serial.begin(115200);
   firmwareUpdateManager.begin(true);
   Serial.println("Device ready. Send 'update' via Serial to activate update mode.");
+  Serial.println("Activating update mode...");
+  firmwareUpdateManager.startUpdateMode();
 }
 
 void loop() {

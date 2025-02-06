@@ -10,7 +10,7 @@ bool FirmwareUpdater::initialize(uint32_t totalSize) {
 }
 
 bool FirmwareUpdater::writePacket(const uint8_t* data, size_t length) {
-    size_t written = Update.write(data, length);
+    size_t written = Update.write(const_cast<uint8_t*>(data), length);
     if(written != length) {
         return false;
     }

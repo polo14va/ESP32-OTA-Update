@@ -1,30 +1,35 @@
-#ifndef BLE_FIRMWARE_SERVICE_H
-#define BLE_FIRMWARE_SERVICE_H
+#include "BLEFirmwareService.h"
 
-#include <Arduino.h>
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
+BLEFirmwareService::BLEFirmwareService(IFirmwareUpdateHandler* updateHandler)
+    : updateHandler(updateHandler), pServer(nullptr), pService(nullptr),
+      handshakeChar(nullptr), dataChar(nullptr), ackChar(nullptr) {}
 
-class IFirmwareUpdateHandler {
-public:
-    virtual void onHandshakeReceived(uint32_t totalSize, uint16_t totalPackets) = 0;
-    virtual void onDataReceived(const uint8_t* data, size_t length) = 0;
-};
+void BLEFirmwareService::begin() {
+    BLEDevice::init("OTA_Device");
+    pServer = BLEDevice::createServer();
+    pService = pServer->createService(BLEUUID("0000FFF0-0000-1000-8000-00805F9B34FB"));
+    handshakeChar = pService->createCharacteristic(
+        BLEUUID("0000FFF1-0000-1000-8000-00805F9B34FB"),
+        BLECharacteristic::PROPERTY_WRITE
+    );
+    dataChar = pService->createCharacteristic(
+        BLEUUID("0000FFF2-0000-1000-8000-00805F9B34FB"),
+        BLECharacteristic::PROPERTY_WRITE
+    );
+    ackChar = pService->createCharacteristic(
+        BLEUUID("0000FFF3-0000-1000-8000-00805F9B34FB"),
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY
+    );
+    pService->start();
+    BLEAdvertising* advertising = BLEDevice::getAdvertising();
+    advertising->addServiceUUID(BLEUUID("0000FFF0-0000-1000-8000-00805F9B34FB"));
+    advertising->setScanResponse(false);
+    BLEDevice::startAdvertising();
+}
 
-class BLEFirmwareService {
-public:
-    BLEFirmwareService(IFirmwareUpdateHandler* updateHandler);
-    void begin();
-    void sendAck(uint16_t packetNumber, bool status);
-private:
-    IFirmwareUpdateHandler* updateHandler;
-    BLEServer* pServer;
-    BLEService* pService;
-    BLECharacteristic* handshakeChar;
-    BLECharacteristic* dataChar;
-    BLECharacteristic* ackChar;
-};
-
-#endif
+void BLEFirmwareService::sendAck(uint16_t packetNumber, bool status) {
+    char ackMessage[16];
+    snprintf(ackMessage, sizeof(ackMessage), "%u:%d", packetNumber, status);
+    ackChar->setValue((uint8_t*)ackMessage, strlen(ackMessage));
+    ackChar->notify();
+}

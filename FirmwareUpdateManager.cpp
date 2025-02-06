@@ -23,3 +23,7 @@ void FirmwareUpdateManager::onDataReceived(const uint8_t* data, size_t length) {
         updater->finalize();
     }
 }
+
+void FirmwareUpdateManager::startUpdateMode() {
+    begin(true);
+}
