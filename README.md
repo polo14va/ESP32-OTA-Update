@@ -74,3 +74,4 @@ This project is licensed under the GNU General Public License (GPL) for personal
 ---
 
 ## Acknowledgments
+Author: Pedro Luis Martinez Acebron
