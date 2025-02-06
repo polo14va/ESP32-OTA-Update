@@ -61,11 +61,34 @@ To incorporate the ESP32-OTA-Update library into your project, follow these step
 
 1. **Clone the Repository:**
 
-   ```bash
+```bash
    git clone https://github.com/your-username/ESP32-OTA-Update.git
    cd ESP32-OTA-Update
+```
 
 ---
+
+2. **Compile**
+
+```bash
+arduino-cli compile --fqbn esp32:esp32:esp32 . --output-dir build
+```
+3. **upload**
+Get USB devices connected
+
+```bash
+arduino-cli board list
+```
+
+Get Name Serial Port XXXX
+```bash
+arduino-cli board list
+arduino-cli upload -p /dev/XXXXX  --fqbn esp32:esp32:esp32 .
+# example arduino-cli upload -p /dev/cu.usbserial-0001  --fqbn esp32:esp32:esp32 .
+
+arduino-cli compile --fqbn esp32:esp32:esp32 . --output-dir build && mv build/*.bin build/BLEFirmwareUpdate-V-1.0.0.bin
+
+```
 
 ## License
 

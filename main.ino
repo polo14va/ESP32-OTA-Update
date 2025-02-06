@@ -2,14 +2,12 @@
 #include "FirmwareUpdateManager.h"
 
 FirmwareUpdateManager firmwareUpdateManager;
-
 #define LED_PIN 2
 
 void setup() {
   Serial.begin(115200);
   Serial.println(F("Device ready. Send 'update' via Serial to activate update mode."));
   firmwareUpdateManager.startUpdateMode();
-
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 }
@@ -26,9 +24,8 @@ void loop() {
   delay(100);
 
   static unsigned long previousMillis = 0;
-  unsigned long currentMillis = millis();
-  if(currentMillis - previousMillis >= 1000) { // toggle every 500ms
-    previousMillis = currentMillis;
+  if (millis() - previousMillis >= 2000) {
+    previousMillis = millis();
     digitalWrite(LED_PIN, !digitalRead(LED_PIN));
   }
 }
