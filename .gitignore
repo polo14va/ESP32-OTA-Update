@@ -2,3 +2,4 @@ getContext.sh
 bin/
 build/
 *.bin
+.DS_Store
