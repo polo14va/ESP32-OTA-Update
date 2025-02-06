@@ -1,1 +1,4 @@
 getContext.sh
+bin/
+build/
+*.bin

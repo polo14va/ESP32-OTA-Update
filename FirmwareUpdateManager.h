@@ -13,10 +13,11 @@ public:
     void onDataReceived(const uint8_t* data, size_t length) override;
     void startUpdateMode();
 private:
-    BLEFirmwareService* bleService;
-    FirmwareUpdater* updater;
+    BLEFirmwareService bleService;
+    FirmwareUpdater updater;
     uint16_t totalPackets;
     uint16_t currentPacket;
+    bool updateModeActive;
 };
 
 #endif

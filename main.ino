@@ -3,22 +3,32 @@
 
 FirmwareUpdateManager firmwareUpdateManager;
 
+#define LED_PIN 2
+
 void setup() {
   Serial.begin(115200);
-  firmwareUpdateManager.begin(true);
-  Serial.println("Device ready. Send 'update' via Serial to activate update mode.");
-  Serial.println("Activating update mode...");
+  Serial.println(F("Device ready. Send 'update' via Serial to activate update mode."));
   firmwareUpdateManager.startUpdateMode();
+
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 }
 
 void loop() {
   if (Serial.available()) {
     String command = Serial.readStringUntil('\n');
     command.trim();
-    if (command.equalsIgnoreCase("update")) {
-      Serial.println("Activating update mode...");
+    if (command.equalsIgnoreCase(F("update"))) {
+      Serial.println(F("Activating update mode..."));
       firmwareUpdateManager.startUpdateMode();
     }
   }
   delay(100);
+
+  static unsigned long previousMillis = 0;
+  unsigned long currentMillis = millis();
+  if(currentMillis - previousMillis >= 1000) { // toggle every 500ms
+    previousMillis = currentMillis;
+    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+  }
 }

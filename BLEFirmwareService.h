@@ -2,10 +2,8 @@
 #define BLE_FIRMWARE_SERVICE_H
 
 #include <Arduino.h>
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
+#include <NimBLEDevice.h>
+#include <NimBLE2902.h>
 
 class IFirmwareUpdateHandler {
 public:
@@ -15,16 +13,29 @@ public:
 
 class BLEFirmwareService {
 public:
+    class FirmwareUpdateCallback : public NimBLECharacteristicCallbacks {
+    public:
+        FirmwareUpdateCallback(BLEFirmwareService* service) : bleService(service) {}
+        void onWrite(NimBLECharacteristic* pCharacteristic) override;
+    private:
+        BLEFirmwareService* bleService;
+    };
+
     BLEFirmwareService(IFirmwareUpdateHandler* updateHandler);
     void begin();
     void sendAck(uint16_t packetNumber, bool status);
-private:
+
+    uint32_t fileSize;
+    uint8_t currentChunk[256];
+    size_t currentChunkSize;
     IFirmwareUpdateHandler* updateHandler;
-    BLEServer* pServer;
-    BLEService* pService;
-    BLECharacteristic* handshakeChar;
-    BLECharacteristic* dataChar;
-    BLECharacteristic* ackChar;
+
+private:
+    NimBLEServer* pServer;
+    NimBLEService* pService;
+    NimBLECharacteristic* rxChar;
+    NimBLECharacteristic* txChar;
+    FirmwareUpdateCallback firmwareCallback;
 };
 
 #endif
